@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Africa Map Quiz</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--fg:#1f2326;--muted:#6a7076;--bd:#d9d7cf;--ocean:#cfe0ea;--in:#f4f1e8;--out:#b9b9b9;--ln:#8d8c82;--ac:#e4572e;--ok:#2e8b57;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17191b;--card:#222527;--fg:#ecece8;--muted:#9aa0a6;--bd:#3a3e41;--ocean:#1f2f3b;--in:#5c5b52;--out:#2f3033;--ln:#403f3a}}
+:root[data-theme="dark"]{--bg:#17191b;--card:#222527;--fg:#ecece8;--muted:#9aa0a6;--bd:#3a3e41;--ocean:#1f2f3b;--in:#5c5b52;--out:#2f3033;--ln:#403f3a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:4px 0 2px}
+.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+fieldset{border:0;padding:0;margin:0 0 16px}
+legend{font-weight:600;margin-bottom:8px}
+.opt{display:block;border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.opt small{color:var(--muted);display:block}
+button{font:inherit;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:9px 14px;cursor:pointer}
+button.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;color:var(--muted);font-size:14px}
+#map svg{width:100%;height:auto;max-height:58vh;border-radius:10px;display:block;border:1px solid var(--bd)}
+.in{fill:var(--in)}.out{fill:var(--out)}.in,.out{stroke:var(--ln);stroke-width:.6}
+.hit{fill:var(--ac);stroke:var(--ac);stroke-width:1}
+.badge{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:99px;padding:2px 10px;font-size:13px;color:var(--muted)}
+input[type=text]{flex:1;min-width:180px;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)}
+#fb{min-height:24px;margin:8px 0 0;font-weight:600}
+.bad{color:var(--ac)}.good{color:var(--ok)}
+.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#bank{display:flex;flex-wrap:wrap;gap:6px;max-height:210px;overflow-y:auto;padding-top:4px}
+#bank button{padding:5px 10px;font-size:14px;border-radius:99px}
+.miss{color:var(--muted);columns:2;padding-left:18px}
+</style>
+</head>
+<body>
+<main>
+<h1>Africa Map Quiz</h1>
+<p class="sub">Identify the highlighted feature. Lighter land belongs to the region being studied; grayed-out land is outside it.</p>
+
+<section id="setup" class="card">
+ <fieldset><legend>Mode</legend>
+  <label class="opt"><input type="radio" name="mode" value="easy" checked> Easy<small>Pick or type from a word bank</small></label>
+  <label class="opt"><input type="radio" name="mode" value="hard"> Hard<small>Type every answer from memory (small typos are forgiven)</small></label>
+ </fieldset>
+ <fieldset><legend>Region <small style="font-weight:400;color:var(--muted)">(choose one or more)</small></legend>
+  <label class="opt"><input type="checkbox" name="reg" value="ALL" checked> Free game<small>Every feature from every region, shuffled</small></label>
+  <label class="opt"><input type="checkbox" name="reg" value="SW"> Southwest Asia<small id="n-SW"></small></label>
+  <label class="opt"><input type="checkbox" name="reg" value="NA"> Northern Africa<small id="n-NA"></small></label>
+  <label class="opt"><input type="checkbox" name="reg" value="WA"> West Africa<small id="n-WA"></small></label>
+  <label class="opt"><input type="checkbox" name="reg" value="CA"> Central Africa<small id="n-CA"></small></label>
+  <label class="opt"><input type="checkbox" name="reg" value="ES"> Eastern &amp; Southern Africa<small id="n-ES"></small></label>
+ </fieldset>
+ <fieldset><legend>Feature type <small style="font-weight:400;color:var(--muted)">(choose one or more)</small></legend>
+  <label class="opt"><input type="checkbox" name="typ" value="all" checked> All types<small id="t-all"></small></label>
+  <label class="opt"><input type="checkbox" name="typ" value="pol"> Countries &amp; territories<small id="t-pol"></small></label>
+  <label class="opt"><input type="checkbox" name="typ" value="mtn"> Mountains<small id="t-mtn"></small></label>
+  <label class="opt"><input type="checkbox" name="typ" value="riv"> Rivers &amp; lakes<small id="t-riv"></small></label>
+  <label class="opt"><input type="checkbox" name="typ" value="sea"> Seas, oceans, straits &amp; canals<small id="t-sea"></small></label>
+  <label class="opt"><input type="checkbox" name="typ" value="land"> Peninsulas, deserts &amp; land regions<small id="t-land"></small></label>
+ </fieldset>
+ <button class="pri" id="go">Start quiz</button>
+</section>
+
+<section id="quiz" class="card" hidden>
+ <div class="bar"><span id="prog"></span><span><span class="badge" id="kind"></span> <button id="quit">Menu</button></span></div>
+ <div id="map"></div>
+ <div class="row" style="margin-top:12px">
+  <input type="text" id="ans" placeholder="What is the highlighted feature?" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <button class="pri" id="sub">Check</button><button id="skip">Skip</button>
+ </div>
+ <p id="fb" aria-live="polite"></p>
+ <div id="bankwrap" hidden><div class="sub" style="margin:8px 0 4px">Word bank</div><div id="bank"></div></div>
+</section>
+
+<section id="end" class="card" hidden>
+ <h2 id="score" style="margin-top:0"></h2>
+ <div id="missed"></div>
+ <div class="row" style="margin-top:12px"><button class="pri" id="retry">Retry missed</button><button id="again">Back to menu</button></div>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.9/datamaps.world.min.js"></script>
+<script>
+// ---------- Data ----------
+const R={SW:{n:'Southwest Asia',v:[24,64,10,47]},NA:{n:'Northern Africa',v:[-20,38,8,38]},WA:{n:'West Africa',v:[-20,18,2,28]},CA:{n:'Central Africa',v:[6,36,-14,24]},ES:{n:'Eastern & Southern Africa',v:[8,56,-36,24]},XN:{n:'Nile',v:[20,42,-3,33]}};
+const sp=s=>s.split(' ');
+const CS={SW:[...sp('BHR CYP IRN IRQ ISR PSE JOR KWT LBN OMN QAT SAU SYR TUR ARE YEM'),'Northern Cyprus'],
+NA:sp('DZA EGY LBY MAR TUN ESH'),
+WA:sp('BEN BFA CIV GMB GHA GIN GNB LBR MLI MRT NER NGA SEN SLE TGO'),
+CA:sp('CMR TCD CAF COD GNQ GAB COG'),
+ES:[...sp('AGO BWA BDI DJI ERI ETH KEN LSO MDG MWI MOZ NAM RWA SOM ZAF SSD SDN SWZ TZA UGA ZMB ZWE'),'Somaliland']};
+CS.XN=[...CS.NA,...CS.ES];
+const FB={BHR:[50.55,26.0],GMB:[-15.5,13.45],QAT:[51.2,25.3]};
+const X={ISR:['PSE'],CYP:['Northern Cyprus'],SOM:['Somaliland']};
+const ell=(cx,cy,rx,ry,a=0,n=28)=>{const c=Math.cos(a*Math.PI/180),s=Math.sin(a*Math.PI/180),o=[];for(let i=0;i<n;i++){const t=i/n*6.2832,x=rx*Math.cos(t),y=ry*Math.sin(t);o.push([cx+x*c-y*s,cy+x*s+y*c])}return o};
+const F=[],BIG=new Set(['Atlantic Ocean','Indian Ocean']);
+const add=(n,k,r,g,a)=>{const f={n,k,r:r.split(','),g,a:a||[]};F.push(f);return f};
+const cn={SW:'Bahrain:BHR|Cyprus:CYP|Iran:IRN|Iraq:IRQ|Israel / Palestine:ISR|Jordan:JOR|Kuwait:KWT|Lebanon:LBN|Oman:OMN|Qatar:QAT|Saudi Arabia:SAU|Syria:SYR|Turkey:TUR|United Arab Emirates:ARE|Yemen:YEM',
+NA:'Algeria:DZA|Egypt:EGY|Libya:LBY|Morocco:MAR|Tunisia:TUN|Western Sahara:ESH',
+WA:`Benin:BEN|Burkina Faso:BFA|Côte d'Ivoire:CIV|Gambia:GMB|Ghana:GHA|Guinea:GIN|Guinea-Bissau:GNB|Liberia:LBR|Mali:MLI|Mauritania:MRT|Niger:NER|Nigeria:NGA|Senegal:SEN|Sierra Leone:SLE|Togo:TGO`,
+CA:'Cameroon:CMR|Chad:TCD|Central African Republic:CAF|Democratic Republic of the Congo:COD|Equatorial Guinea:GNQ|Gabon:GAB|Republic of the Congo:COG',
+ES:'Angola:AGO|Botswana:BWA|Burundi:BDI|Djibouti:DJI|Eritrea:ERI|Ethiopia:ETH|Kenya:KEN|Lesotho:LSO|Madagascar:MDG|Malawi:MWI|Mozambique:MOZ|Namibia:NAM|Rwanda:RWA|Somalia:SOM|South Africa:ZAF|South Sudan:SSD|Sudan:SDN|Eswatini:SWZ|Tanzania:TZA|Uganda:UGA|Zambia:ZMB|Zimbabwe:ZWE'};
+const AL={'Israel / Palestine':['israel','palestine','israel and palestine'],'United Arab Emirates':['uae','emirates'],Turkey:['turkiye'],"Côte d'Ivoire":['ivory coast','cote divoire'],'Democratic Republic of the Congo':['drc','dr congo','congo kinshasa','democratic republic of congo'],'Republic of the Congo':['congo brazzaville','republic of congo','congo republic'],'Central African Republic':['car'],Eswatini:['swaziland','eswatini formerly swaziland'],Gambia:['the gambia']};
+for(const r in cn)cn[r].split('|').forEach(s=>{const[n,i]=s.split(':'),f=add(n,'Country',r,i,AL[n]);f.m=[i,...(X[i]||[])]});
+add('Somaliland','Territory','ES','SOL').m=['Somaliland'];
+add('Puntland','Territory','ES',[[[47.9,8.5],[48.9,11.2],[50,11.5],[51.2,11.8],[51,10.4],[50.5,9],[49.2,7.9],[48,7.9]]]);
+add('Canary Islands','Territory','NA',[ell(-16.6,28.3,.35,.25),ell(-15.6,28,.3,.25),ell(-14,28.4,.35,.3),ell(-13.6,29,.25,.2),ell(-17.9,28.7,.2,.2),ell(-17.1,28.1,.15,.15),ell(-18,27.75,.15,.12)],['canaries','canary island']).ring=1;
+F[F.length-1].ctl='Spain';
+add('Madeira Islands','Territory','NA',[ell(-16.95,32.75,.4,.2),ell(-16.35,33.05,.15,.1)],['madeira']);
+F[F.length-1].ctl='Portugal';
+// mountains
+add('Pontic Mountains','Mountains','SW',[[30.5,41],[33,41.3],[36,41],[39,40.7],[41.5,40.8]],['pontic']);
+add('Taurus Mountains','Mountains','SW',[[30.3,37.2],[32.5,36.6],[34.5,37.2],[36.5,37.6],[38.5,38],[41,38.2]],['taurus']);
+add('Zagros Mountains','Mountains','SW',[[44.5,37.5],[46,35],[48,33.5],[50,31.5],[52,29.8],[54,28.2],[56.5,27]],['zagros']);
+add('Atlas Mountains','Mountains','NA',[[-9.5,30.7],[-7,31.5],[-5,32.3],[-3,33.3],[-1,34.2],[1.5,34.8],[4.5,35.7],[7,35.4],[9.5,36.5]],['atlas']);
+// rivers & canal
+add('Euphrates River','River','SW',[[39.5,39.2],[38.5,37.9],[38,36.9],[38.5,36],[40.1,35.3],[41,34.4],[42.4,34.1],[43.8,33.4],[44.5,32.3],[45.5,31.3],[46.6,30.9],[47.4,31],[48.5,30]]);
+add('Tigris River','River','SW',[[40,38.2],[42.2,37.3],[43.1,36.4],[43.9,34.2],[44.4,33.3],[46,32.5],[47.1,31.85],[47.4,31],[48.5,30]]);
+add('Jordan River','River','SW',[[35.6,33.2],[35.6,32.7],[35.55,32],[35.5,31.75]]);
+add('Nile River','River','NA,ES',[[33.2,0.4],[32,2.3],[32,3.6],[31.6,4.85],[31.65,9.5],[32.5,13.5],[32.5,15.6],[33.9,17.7],[33.3,19.5],[31.85,18.55],[30.5,19.2],[31.3,21.8],[32.9,24.1],[32.65,25.7],[31.25,30]]).vw='XN';
+add('Niger River','River','WA',[[-10.7,9],[-8,12.65],[-6.3,13.4],[-4.2,14.5],[-3,16.7],[0,16.3],[2.1,13.5],[4,11.8],[4.6,10.4],[6.75,7.8],[6.3,5.5],[6,4.3]]);
+add('Benue River','River','WA',[[13.2,7],[13.4,9.3],[12.4,9.2],[9.75,8.2],[8.5,7.75],[6.75,7.8]]);
+add('Gambia River','River','WA',[[-11.8,11.4],[-12.3,12.6],[-13.7,13.6],[-14.9,13.5],[-16,13.4],[-16.6,13.45]]);
+add('Senegal River','River','WA',[[-10.5,12.5],[-11.4,14.4],[-12.45,14.9],[-13.25,15.65],[-14.95,16.65],[-15.9,16.4],[-16.5,16.05]]);
+add('Volta River','River','WA',[[-3,11.5],[-2.3,10.8],[-1,9.5],[0,8.2],[0.05,6.3],[0.65,5.8]]);
+add('Congo River','River','CA',[[26.7,-10],[27,-6],[26,-3],[25.2,0.5],[23.6,1.2],[21.5,2.2],[19,1.2],[18.3,0.05],[16.2,-2],[15.3,-4.3],[13.5,-5.7],[12.4,-6]]);
+add('Kasai River','River','CA',[[19.5,-12],[21.5,-9.5],[20.8,-6.4],[20.6,-4.3],[18.5,-3.5],[16.2,-3.2]]);
+add('Ubangi River','River','CA',[[23,4.6],[21.2,4.3],[18.6,4.35],[17.8,3],[17.7,1.6],[17.7,-0.1]]);
+add('Zambezi River','River','ES',[[24.4,-11.4],[23.2,-13.5],[23.3,-16.1],[24.3,-17.5],[25.85,-17.9],[28.8,-16.5],[32.7,-15.6],[33.6,-16.2],[35,-17.3],[36.5,-18.6]]);
+add('Suez Canal','Canal','NA',[[32.3,31.27],[32.3,30.6],[32.45,30.2],[32.55,29.95]]);
+// deserts, land regions
+add('Fertile Crescent','Region','SW',[[[48.6,30.4],[47,32.5],[44,35],[42,37.3],[39,37.2],[36.3,36.7],[35.8,35],[35.1,33],[34.7,31.3],[35.8,31.5],[36.6,33.5],[38.3,35.7],[40.5,35.8],[42.5,34.5],[44.5,33],[46.5,31.3],[47.8,30.4]]],['mesopotamia','fertile crescent mesopotamia']);
+add('Negev Desert','Desert','SW',[[[34.4,31.3],[34.95,31.4],[35.2,30.5],[35,29.55],[34.9,29.5],[34.5,30],[34.3,30.8]]],['negev']);
+add('Rub al Khali','Desert','SW',[[[44.5,17.8],[47,16.7],[50,17],[52,17.4],[53.5,18.5],[55.5,20],[55,22],[53,23.2],[51,22.8],[50,23.5],[48,22.5],[46,21.5],[45.5,20.5],[44.8,19.5]]],['empty quarter','rub al khali empty quarter','rub al-khali']);
+add('Syrian Desert','Desert','SW',[[[36,33.5],[38,35],[41,34.8],[43,34.2],[44,33],[42.5,31.5],[40,30.3],[38,30],[37,31.5],[36.8,32.8]]]);
+add('Sahara Desert','Desert','NA,WA,CA,ES',[[[-16.8,18],[-16.8,21],[-15,24],[-13,27.5],[-10,29.5],[-5,31],[0,30.8],[5,33],[9,32.3],[11,32.5],[15,31.5],[19,30.5],[24,31.2],[29,30.8],[32.6,30],[33.5,27.5],[35,24],[36,22],[37,19],[33,18],[30,17.4],[24,17],[15,16.6],[8,17.2],[0,17.5],[-8,17.3],[-12,17.8]]],['the sahara']);
+add('Libyan Desert','Desert','NA',[[[24.5,31],[29,30.3],[31,28],[32.5,26],[32.5,23],[30,22],[25,21.5],[24,24],[24,27.5]]]);
+add('Nubian Desert','Desert','ES',[[[31.5,21.8],[33.5,22],[35.5,22],[36,20],[35.5,18],[33.5,18],[32,19.5],[31.3,20.5]]]);
+add('Kalahari Desert','Desert','ES',[[[21,-19],[25,-18.5],[27,-21],[27.5,-25],[26,-27.5],[22,-28.5],[20,-27],[19.5,-23],[20,-20]]],['kalahari']);
+add('Namib Desert','Desert','ES',[[[12,-15.5],[13,-16],[14.2,-19],[15.3,-22],[16.4,-25],[17.2,-28],[16.4,-28.7],[15.3,-26.8],[14.3,-24],[13.5,-21],[12.2,-17.5]]],['namib']);
+add('Serengeti Plain','Plain','ES',[ell(34.8,-2.5,1.3,1)],['serengeti','serengeti plains','serengeti national park']);
+add('Sahel','Region','WA,CA,ES',[[[-17.5,16.5],[-12,17.2],[-4,17.8],[4,17.2],[12,16.5],[20,16],[28,15.8],[34,15.8],[38,15.2],[37.5,12.5],[32,11.5],[24,11],[16,11.5],[8,12],[0,11.8],[-8,12],[-12,12.5],[-16.5,12.8]]]);
+add('Sinai Peninsula','Peninsula','NA',[[[32.6,31.1],[34.3,31.2],[34.9,29.5],[34.3,27.9],[33.6,28],[32.6,29.9]]],['sinai']);
+add('Nile Delta','Region','NA',[[[31.25,30.1],[30.2,30.9],[29.9,31.2],[31,31.55],[32.3,31.3],[31.9,30.8]]]);
+add('Cape of Good Hope','Cape','ES',[ell(18.47,-34.36,.35,.2)],['the cape of good hope']);
+// lakes
+add('Lake Nasser','Lake','NA',[[[32.9,23.9],[32.7,22.9],[32.8,22],[33,21.7],[33.2,22.2],[33,22.9],[33.1,23.7]]]);
+add('Lake Chad','Lake','WA,CA',[ell(14,13.2,1.1,1)]);
+add('Lake Volta','Lake','WA',[[[0.1,6.3],[0.5,7.5],[0,8.6],[-0.3,9],[-0.75,8.2],[-0.35,7]]]);
+add('Lake Albert','Lake','CA',[[[30.6,1.6],[30.9,1.25],[31.3,2],[31.5,2.5],[31.1,2.4],[30.8,2]]]);
+add('Lake Edward','Lake','CA',[ell(29.6,-0.4,.5,.35)]);
+add('Lake Tanganyika','Lake','CA,ES',[[[29.1,-3.4],[29.4,-4.9],[29.8,-6.5],[30.6,-8.8],[31.1,-8.2],[30.4,-7],[29.9,-5.5],[29.5,-3.6]]]);
+add('Lake Victoria','Lake','ES',[ell(33.2,-1.3,1.6,1.4)]);
+add('Lake Malawi','Lake','ES',[[[34.5,-9.5],[34.2,-11.5],[34.4,-13.2],[34.9,-14.3],[35.2,-13.8],[34.8,-12],[34.9,-10.5],[34.7,-9.5]]],['lake nyasa','nyasa']);
+add('Dead Sea','Lake','SW',[[[35.45,31.78],[35.55,31.6],[35.5,31.3],[35.45,31.05],[35.35,31.2],[35.4,31.55]]]);
+add('Caspian Sea','Lake','SW',[[[47,45],[49,46.8],[53,46.8],[53,45],[50.5,44.5],[51,42.5],[53,41],[54,38],[51,36.8],[49,38.4],[49,40.4],[50.5,41],[49.5,42.5],[47.5,43.5]]]);
+// straits
+add('Bosporus Strait','Strait','SW',[ell(29.05,41.08,.35,.12,70)],['bosphorus','bosphorus strait','bosporus','the bosphorus']);
+add('Dardanelles','Strait','SW',[ell(26.4,40.2,.55,.12,45)],['dardanelles strait','strait of dardanelles']);
+add('Strait of Hormuz','Strait','SW',[ell(56.5,26.45,.55,.18,-25)],['strait of hormuz','hormuz']);
+add('Strait of Gibraltar','Strait','NA',[ell(-5.6,35.95,.7,.25,20)],['straits of gibraltar','gibraltar strait']);
+// seas & oceans (drawn under land; overshoot is hidden)
+add('Black Sea','Sea / Ocean','SW',[[[28,41.2],[28,44],[29.6,45.3],[31,46.5],[33,46],[33.5,44.5],[36,45.3],[38,47],[38.5,45],[41.5,42.6],[41.7,41.5],[36,41.2],[31,41.1]]]);
+add('Gulf of Aden','Sea / Ocean','SW',[[[43.2,11.5],[45,10.5],[49,10.5],[51.5,11.5],[52,13.5],[49,14.5],[45,13.5],[43.2,12.7]]]);
+add('Gulf of Oman','Sea / Ocean','SW',[[[56.2,26.2],[57.2,25.7],[59,25.3],[61.5,25.2],[61.5,22.6],[59.8,22.4],[58.5,23.6],[57,24.4],[56.3,25.1]]]);
+add('Persian Gulf','Sea / Ocean','SW',[[[47.8,29.9],[48.8,30.4],[50.2,30],[51.6,28.6],[53.1,27],[54.7,26.5],[56.4,27.2],[56.5,26.3],[55.6,25.6],[54.4,24.5],[52,24],[51.3,24.3],[50.8,25.5],[50.1,26.4],[49.6,27],[48.6,28],[48,29.2]]],['arabian gulf','the gulf']);
+add('Red Sea','Sea / Ocean','SW,NA',[[[32.2,29.9],[33.5,27.3],[35.2,24],[36.9,19.6],[39.2,15.6],[42.4,13],[43.3,12.3],[43.9,13.3],[43,16.9],[39.6,21.5],[38.4,24],[35.6,28],[35.3,29.6]]]);
+add('Mediterranean Sea','Sea / Ocean','NA',[[[-5.6,35.9],[-5,36.4],[-1,37.5],[0,39],[3,41],[8,41],[12,41],[16,40],[20,40.5],[24,38],[26.5,37],[28,37],[36,37],[36.5,34],[35,32],[34.5,31],[32,30.8],[28,30.8],[25,31],[22,32],[20,30.2],[18,30],[16,31.2],[13,32.3],[10.5,33],[10,34.5],[10.8,36.9],[8,36.9],[5,36.5],[0,35.6],[-2.3,35.1],[-5.4,35.6]]],['mediterranean']);
+add('Atlantic Ocean','Sea / Ocean','NA,WA,CA,ES',[[[-60,45],[-9,45],[-6.5,37.5],[-5.9,36.1],[-5.6,35.7],[-5.5,34],[-5,25],[-10,20],[-12,14],[-10,10],[-8,5.5],[-5,6.5],[2,7],[5,6.2],[8,6.5],[11,4.5],[12,0.5],[13,-4],[15,-9],[15,-12.6],[14,-15.2],[16,-23],[17,-26.6],[18,-28.6],[19,-33.5],[20,-35.5],[20,-40],[-60,-40]]]);
+add('Gulf of Guinea','Sea / Ocean','WA',[[[-8.5,6.5],[-4,7],[0,7.3],[3.4,7.5],[6,6.5],[8.5,5.8],[11,4.8],[11.5,3],[12,0.3],[12.5,-3],[12,-4],[-8.5,-4]]]);
+add('Indian Ocean','Sea / Ocean','ES',[[[20,-40],[20,-36],[22,-33.5],[27,-32.5],[30,-30.5],[32.5,-27],[33,-24],[33.5,-19.5],[36,-17],[38.5,-15.5],[39.5,-12.5],[39,-10],[38,-6.5],[38,-3],[39.5,-1.5],[41,0],[44,3],[47,5.5],[48,8],[50,10.4],[51.3,11.5],[55,13],[90,13],[90,-40]]]);
+add('Mozambique Channel','Sea / Ocean','ES',[[[39.5,-10.5],[43,-12],[45.5,-14],[46,-17],[45,-20],[45,-24.5],[44.5,-26],[33,-26],[34,-24],[34,-20],[36,-17.5],[38,-15],[39,-12]]]);
+
+// ---------- Matching ----------
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z ]/g,' ').replace(/\s+/g,' ').trim().replace(/^the /,'');
+const FULL=new Set(F.map(f=>norm(f.n)));
+F.forEach(f=>{const b=norm(f.n),v=[b,...f.a.map(norm)];
+ if(!/^(bering|ural)/.test(b)){const s=b.replace(/ (river|mountains|peninsula|ocean|sea|desert|plain|strait|canal)$/,'').replace(/^(lake|sea of|bay of|strait of|cape of) /,'');if(s!==b&&!FULL.has(s))v.push(s)}
+ f.v=v});
+const ALLV=new Set(F.flatMap(f=>f.v));
+function lev(a,b){const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]}
+function check(f,val){const v=norm(val);if(!v)return false;if(f.v.includes(v))return true;if(ALLV.has(v)||v.length<7)return false;return f.v.some(x=>x.length>=7&&lev(x,v)<=1)}
+
+// ---------- Map ----------
+let TOPO=[];
+try{const t=Datamap.prototype.worldTopo;TOPO=topojson.feature(t,t.objects.world).features.filter(x=>x.id!=='ATA')}catch(e){console.error('Map data failed to load',e)}
+function mapSvg(f,vk){
+ const [x0,x1,y0,y1]=R[vk].v,W=1000,set=new Set(CS[vk]);
+ const proj=d3.geo.mercator().scale(W/((x1-x0)*Math.PI/180)).translate([0,0]);
+ const p0=proj([x0,y1]),p1=proj([x1,y0]),H=Math.round(p1[1]-p0[1]);
+ const kk=W/(x1-x0),Y=la=>kk*180/Math.PI*Math.log(Math.tan(Math.PI/4+la*Math.PI/360));
+ proj.translate([-p0[0],-p0[1]]).clipExtent([[-40,-40],[W+40,H+40]]);
+ const path=d3.geo.path().projection(proj),P=pt=>[(pt[0]-x0)*kk,Y(y1)-Y(Math.min(pt[1],85))],fmt=pts=>pts.map((p,i)=>(i?'L':'M')+P(p).map(n=>n.toFixed(1)).join(' ')).join('');
+ let h=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map with a highlighted feature"><rect width="${W}" height="${H}" fill="var(--ocean)"/>`;
+ let box=null;
+ const sea=f.k==='Sea / Ocean'&&Array.isArray(f.g),ac='var(--ac)';
+ if(sea)f.g.forEach(r=>{h+=`<path d="${fmt(r)}Z" fill="${ac}" fill-opacity=".8"/>`});
+ const sc=proj.scale(),path2=d3.geo.path().projection(d3.geo.mercator().scale(sc).translate([-p0[0]+sc*2*Math.PI,-p0[1]]).clipExtent([[-40,-40],[W+40,H+40]]));
+ TOPO.forEach(c=>{const hit=!!f.m&&(f.m.includes(c.id)||f.m.includes(c.properties.name)),cl=hit?'hit':set.has(c.id)||set.has(c.properties.name)?'in':'out',d=path(c);
+  if(d)h+=`<path d="${d}" class="${cl}"/>`;
+  if(x1>180&&c.id==='RUS'){const d2=path2(c);if(d2)h+=`<path d="${d2}" class="${cl}"/>`}
+  if(hit&&d){const b=path.bounds(c);box=box?[Math.min(box[0],b[0][0]),Math.min(box[1],b[0][1]),Math.max(box[2],b[1][0]),Math.max(box[3],b[1][1])]:[b[0][0],b[0][1],b[1][0],b[1][1]]}});
+ if(f.k==='Country'&&typeof f.g==='string'&&!box&&FB[f.g]){const q=P(FB[f.g]);box=[q[0],q[1],q[0],q[1]]}
+ let pts=[];
+ if(f.k==='Mountains'){h+=`<path d="${fmt(f.g)}" fill="none" stroke="${ac}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/>`;pts=f.g.map(P)}
+ else if(f.k==='River'||f.k==='Canal'){h+=`<path d="${fmt(f.g)}" fill="none" stroke="${ac}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;pts=f.g.map(P)}
+ else if(Array.isArray(f.g)){const wat=/Sea|Lake|Strait/.test(f.k),big=sea&&BIG.has(f.n);
+  f.g.forEach(r=>{if(!big)h+=`<path d="${fmt(r)}Z" fill="${ac}" fill-opacity="${sea?.2:wat?.45:/Desert|Plain/.test(f.k)?.5:.75}" stroke="${ac}" stroke-width="1.5"${wat?' stroke-dasharray="5 3"':''}/>`;pts.push(...r.map(P))})}
+ if(pts.length){const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);box=[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)]}
+ if(box&&(f.ring||Math.max(box[2]-box[0],box[3]-box[1])<30)){const cx=(box[0]+box[2])/2,cy=(box[1]+box[3])/2,r=Math.max(box[2]-box[0],box[3]-box[1])/2+12;
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${ac}" stroke-width="2.5"/>`}
+ return h+'</svg>';
+}
+
+// ---------- Quiz flow ----------
+const $=id=>document.getElementById(id),S={};
+const show=id=>['setup','quiz','end'].forEach(s=>$(s).hidden=s!==id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+for(const k in R)if($('n-'+k))$('n-'+k).textContent=F.filter(f=>f.r.includes(k)).length+' features';
+function start(items,mode,region){Object.assign(S,{items:shuffle(items),mode,region,i:0,score:0,missed:[],tries:0,lock:false,left:new Set(items.map(f=>f.n))});show('quiz');$('bankwrap').hidden=mode!=='easy';render()}
+function render(){
+ const f=S.items[S.i],vk=f.vw||(S.region.includes('ALL')?f.r[0]:(f.r.find(x=>S.region.includes(x))||f.r[0]));
+ $('map').innerHTML=mapSvg(f,vk);$('kind').textContent=f.k;
+ $('prog').textContent=`Question ${S.i+1} of ${S.items.length} · Score ${S.score}`;
+ $('ans').value='';$('fb').textContent='';$('fb').className='';S.tries=0;S.lock=false;
+ S.stage=1;$('ans').placeholder='What is the highlighted feature?';if(S.mode==='easy')bank([...S.left].sort((a,c)=>a.localeCompare(c)));
+ if(!matchMedia('(pointer:coarse)').matches)$('ans').focus();
+}
+function say(t,c){const e=$('fb');e.textContent=t;e.className=c}
+function advance(ms){S.lock=true;setTimeout(()=>{S.i++;S.i>=S.items.length?finish():render()},ms)}
+function bank(list){const b=$('bank');b.innerHTML='';list.forEach(n=>{const e=document.createElement('button');e.textContent=n;e.onclick=()=>submit(n);b.appendChild(e)})}
+function wrong(f){S.tries++;say('Not quite — try again.','bad');const a=$('ans');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');
+ if(S.tries>=2&&S.mode==='hard')say(`Not quite. Hint: it starts with “${(S.stage===2?f.ctl:f.n)[0]}”.`,'bad')}
+function done(f,m){if(!S.tries)S.score++;else S.missed.push(f);S.left.delete(f.n);say(m,'good');advance(f.ctl?1600:650)}
+function submit(val){
+ if(S.lock)return;const f=S.items[S.i];
+ if(S.stage===2){norm(val)===norm(f.ctl)?done(f,`Correct! ${f.n} is controlled by ${f.ctl}.`):wrong(f);return}
+ if(check(f,val)){
+  if(f.ctl){S.stage=2;say('Correct! Now: which country controls it?','good');$('ans').value='';$('ans').placeholder='Which country controls it?';if(S.mode==='easy')bank(shuffle(['Spain','Portugal','France','Morocco','Italy','Egypt']));return}
+  done(f,'Correct! '+f.n)}
+ else wrong(f)
+}
+$('sub').onclick=()=>submit($('ans').value);
+$('ans').onkeydown=e=>{if(e.key==='Enter')submit($('ans').value)};
+$('skip').onclick=()=>{if(S.lock)return;const f=S.items[S.i];S.missed.push(f);S.left.delete(f.n);say('It’s '+f.n+(f.ctl?', controlled by '+f.ctl:'')+'.','bad');advance(1500)};
+function finish(){
+ const miss=[...new Set(S.missed)];show('end');
+ $('score').textContent=`You got ${S.score} of ${S.items.length} on the first try`;
+ $('missed').innerHTML=miss.length?'<p>Review these:</p><ul class="miss">'+miss.map(f=>`<li>${f.n}</li>`).join('')+'</ul>':'<p>A perfect run — nicely done!</p>';
+ $('retry').hidden=!miss.length;S.retryList=miss;
+}
+const CAT=f=>f.k==='Country'||f.k==='Territory'?'pol':f.k==='Mountains'?'mtn':f.k==='River'||/^Lake /.test(f.n)?'riv':['Peninsula','Region','Desert','Plain','Cape'].includes(f.k)?'land':'sea';
+const pool=(rs,ts)=>F.filter(f=>(rs.includes('ALL')||f.r.some(x=>rs.includes(x)))&&(ts.includes('all')||ts.includes(CAT(f))));
+const val=n=>document.querySelector(`[name=${n}]:checked`).value;
+const vals=n=>[...document.querySelectorAll(`[name=${n}]:checked`)].map(e=>e.value);
+function upd(){document.querySelectorAll('[name=typ]').forEach(e=>{const n=pool(vals('reg'),[e.value]).length;$('t-'+e.value).textContent=n+' features';e.disabled=!n;e.parentElement.style.opacity=n?1:.45;if(!n)e.checked=false});
+ if(!vals('typ').length)document.querySelector('[name=typ][value=all]').checked=true}
+function multi(n,all,after){const es=[...document.querySelectorAll(`[name=${n}]`)],A=es.find(x=>x.value===all),O=es.filter(x=>x!==A);
+ es.forEach(e=>e.onchange=()=>{
+  if(e===A&&A.checked)O.forEach(x=>x.checked=false);
+  else if(e!==A&&e.checked)A.checked=false;
+  const en=O.filter(x=>!x.disabled);
+  if(!en.some(x=>x.checked)||en.every(x=>x.checked)){O.forEach(x=>x.checked=false);A.checked=true}
+  after()})}
+multi('reg','ALL',upd);multi('typ','all',()=>{});upd();
+$('go').onclick=()=>start(pool(vals('reg'),vals('typ')),val('mode'),vals('reg'));
+$('retry').onclick=()=>start(S.retryList,S.mode,S.region);
+$('again').onclick=()=>show('setup');
+$('quit').onclick=()=>show('setup');
+</script>
+</body>
+</html>
